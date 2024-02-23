@@ -38,7 +38,8 @@
             mkdir -p $out
             cp -r . $out
             mkdir -p $out/bin
-            echo "${node.${final.system}}/bin/node src/server.js" > $out/bin/ws-data-streaming-playground
+            echo "#!${node.${final.system}}/bin/node" > $out/bin/ws-data-streaming-playground
+            echo "require('../src/server.js')" >> $out/bin/ws-data-streaming-playground
             chmod +x $out/bin/ws-data-streaming-playground
           '';
         };
