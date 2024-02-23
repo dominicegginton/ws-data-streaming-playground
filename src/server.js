@@ -13,7 +13,7 @@ function requestListener(_, res) {
   const read = fs.createReadStream(__dirname + '/index.html');
   read.on('data', (chunk) => {
     /* replace %SERVER% with the server address */
-    /* dont do silly here, use a templating engine */
+    /* dont be silly here, use a templating engine */
     const chunkString = chunk.toString();
     const newString = chunkString.replace('%SERVER%', 'ws://localhost:3000');
 
