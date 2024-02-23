@@ -1,0 +1,60 @@
+<html>
+  <body>
+    <div id="connection-status">Connection status: Disconnected</div>
+    <button id="connection-btn">Connect</button>
+    <div id="data"></div>
+
+    <script>
+      const connectionStatus = document.getElementById('connection-status');
+      const connectionBtn = document.getElementById('connection-btn');
+      const data = document.getElementById('data');
+
+      function connect() {
+        const ws = new WebSocket('%SERVER%');
+
+        function disconnect() {
+          ws.send('disconnect');
+          ws.close();
+        }
+
+        function open() {
+          connectionStatus.innerHTML = 'Connection status: Connected';
+          connectionBtn.removeEventListener('click', connect);
+          connectionBtn.addEventListener('click', disconnect);
+          connectionBtn.innerHTML = 'Disconnect';
+          ws.send('start-streaming');
+        }
+
+        function close() {
+          connectionStatus.innerHTML = 'Connection status: Disconnected';
+          connectionBtn.removeEventListener('click', disconnect);
+          connectionBtn.addEventListener('click', connect);
+          connectionBtn.innerHTML = 'Connect';
+        }
+
+        function error() {
+          connectionStatus.innerHTML = 'Connection status: Error';
+        }
+
+        function message(message) {
+          const dataString = message.data.toString();
+          if (dataString === 'streaming-started' || dataString === 'streaming-ended') return;
+          const p = document.createElement('p');
+          p.innerHTML = `Data: ${dataString}`;
+          data.appendChild(p);
+          if (data.childNodes.length > 10) {
+            data.removeChild(data.childNodes[0]);
+          }
+        }
+
+        ws.onopen = open;
+        ws.onclose = close;
+        ws.onerror = error;
+        ws.onmessage = message;
+        data.innerHTML = '';
+      }
+
+      connectionBtn.addEventListener('click', connect);
+    </script>
+  </body>
+</html>
